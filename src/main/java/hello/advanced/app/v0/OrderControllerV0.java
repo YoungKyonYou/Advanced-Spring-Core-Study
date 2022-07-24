@@ -1,4 +1,4 @@
-package hello.advanced.v0;
+package hello.advanced.app.v0;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 //@ResponseBody + @Controller 합쳐진 것
 @RestController
 @RequiredArgsConstructor
-public class OrderContorllerV0 {
+public class OrderControllerV0 {
 
     private final OrderServiceV0 orderService;
 
