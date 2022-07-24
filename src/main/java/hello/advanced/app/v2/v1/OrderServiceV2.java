@@ -1,29 +1,27 @@
-package hello.advanced.app.v1;
+package hello.advanced.app.v2.v1;
 
+import hello.advanced.trace.TraceId;
 import hello.advanced.trace.TraceStatus;
 import hello.advanced.trace.hellotrace.HelloTraceV1;
+import hello.advanced.trace.hellotrace.HelloTraceV2;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-//Component Scan의 대상으로 만들어줌
-@Repository
+//ComponentScan의 대상이 됨
+@Service
 @RequiredArgsConstructor
-public class OrderRepositoryV1 {
+public class OrderServiceV2 {
+    private final OrderRepositoryV2 orderRepository;
+    private final HelloTraceV2 trace;
 
-    private final HelloTraceV1 trace;
-    public void save(String itemId){
-
+    public void orderItem(TraceId traceId, String itemId){
         TraceStatus status=null;
         //try catch를 하는 이유는 만약 orderService.orderItem(itemID)에서 오류가 나면
         //그 다음 줄인 trace.end(status)까지 안 내려가고 종료된다. 그것을 위해서 위에 TraceStatus status를 따로 선언하고
         //catch에서 그 status를 받아서 출력하기 위함이다.
         try {
-            status = trace.begin("OrderRepositorysave()");
-            //저장 로직
-            if(itemId.equals("ex")){
-                throw new IllegalStateException("예외 발생!");
-            }
-            sleep(1000);
+            status = trace.beginSync(traceId,"OrderService.orderItem()");
+            orderRepository.save(status.getTraceId(),itemId);
             trace.end(status);
         }catch(Exception e){
             trace.exception(status, e);
@@ -32,12 +30,5 @@ public class OrderRepositoryV1 {
             throw e;
         }
 
-    }
-    private void sleep(int millis){
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 }
