@@ -1,27 +1,27 @@
-package hello.advanced.app.v2.v1;
+package hello.advanced.app.v3;
 
 import hello.advanced.trace.TraceId;
 import hello.advanced.trace.TraceStatus;
-import hello.advanced.trace.hellotrace.HelloTraceV1;
 import hello.advanced.trace.hellotrace.HelloTraceV2;
+import hello.advanced.trace.logtrace.LogTrace;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 //ComponentScan의 대상이 됨
 @Service
 @RequiredArgsConstructor
-public class OrderServiceV2 {
-    private final OrderRepositoryV2 orderRepository;
-    private final HelloTraceV2 trace;
+public class OrderServiceV3 {
+    private final OrderRepositoryV3 orderRepository;
+    private final LogTrace trace;
 
-    public void orderItem(TraceId traceId, String itemId){
+    public void orderItem(String itemId){
         TraceStatus status=null;
         //try catch를 하는 이유는 만약 orderService.orderItem(itemID)에서 오류가 나면
         //그 다음 줄인 trace.end(status)까지 안 내려가고 종료된다. 그것을 위해서 위에 TraceStatus status를 따로 선언하고
         //catch에서 그 status를 받아서 출력하기 위함이다.
         try {
-            status = trace.beginSync(traceId,"OrderService.orderItem()");
-            orderRepository.save(status.getTraceId(),itemId);
+            status = trace.begin("OrderService.orderItem()");
+            orderRepository.save(itemId);
             trace.end(status);
         }catch(Exception e){
             trace.exception(status, e);
